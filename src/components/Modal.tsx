@@ -1,19 +1,23 @@
-import clsx from "clsx";
-import { ReactNode } from "react";
+import classNames from "classnames";
+import React, { DialogHTMLAttributes, forwardRef, ReactNode } from "react";
 import styles from "./Modal.module.css";
 
-export interface ModalRootProps {
+export interface ModalRootProps
+  extends DialogHTMLAttributes<HTMLDialogElement> {
   children: ReactNode;
   className?: string;
 }
 
-function ModalRoot({ children, className }: ModalRootProps) {
+const ModalRoot: React.ForwardRefRenderFunction<
+  HTMLDialogElement,
+  ModalBodyProps
+> = ({ children, className, ...rest }, ref) => {
   return (
-    <dialog className={clsx(styles.modal)}>
-      <div className={clsx(styles.content, className)}>{children}</div>
+    <dialog className={classNames(styles.modal, className)} {...rest} ref={ref}>
+      <div className={styles.content}>{children}</div>
     </dialog>
   );
-}
+};
 
 ModalRoot.displayName = "Modal.Root";
 
@@ -23,7 +27,9 @@ export interface ModalHeaderProps {
 }
 
 function ModalHeader({ children, className }: ModalHeaderProps) {
-  return <header className={clsx(styles.header, className)}>{children}</header>;
+  return (
+    <header className={classNames(styles.header, className)}>{children}</header>
+  );
 }
 
 ModalHeader.displayName = "Modal.Header";
@@ -34,7 +40,7 @@ export interface ModalBodyProps {
 }
 
 function ModalBody({ children, className }: ModalBodyProps) {
-  return <div className={clsx(styles.body, className)}>{children}</div>;
+  return <div className={classNames(styles.body, className)}>{children}</div>;
 }
 
 ModalBody.displayName = "Modal.Body";
@@ -45,13 +51,15 @@ export interface ModalFooterProps {
 }
 
 function ModalFooter({ children, className }: ModalFooterProps) {
-  return <footer className={clsx(styles.footer, className)}>{children}</footer>;
+  return (
+    <footer className={classNames(styles.footer, className)}>{children}</footer>
+  );
 }
 
 ModalFooter.displayName = "Modal.Footer";
 
 export const Modal = {
-  Root: ModalRoot,
+  Root: forwardRef(ModalRoot),
   Header: ModalHeader,
   Body: ModalBody,
   Footer: ModalFooter,

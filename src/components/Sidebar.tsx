@@ -20,14 +20,12 @@ export function Sidebar() {
       </div>
 
       <footer>
-        <Button.Root type="outlined">
-          <Button.Icon>
+        <Button color="primary" outlined asChild>
+          <a href="">
             <PencilLine size={20} />
-          </Button.Icon>
-          <Button.Button asChild>
-            <a href="">Editar seu perfil</a>
-          </Button.Button>
-        </Button.Root>
+            <p>Editar seu perfil</p>
+          </a>
+        </Button>
       </footer>
     </aside>
   );

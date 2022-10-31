@@ -1,6 +1,13 @@
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  InvalidEvent,
+  RefObject,
+  useRef,
+  useState,
+} from "react";
 
 import { Avatar } from "./Avatar";
 import { Button } from "./Button";
@@ -22,12 +29,22 @@ interface PostProps {
   author: Author;
   content: Content[];
   publishedAt: Date;
+  modalRef: RefObject<HTMLDialogElement>;
+  onShowModal: () => void;
 }
 
-export function Post({ author, content, publishedAt }: PostProps) {
+export function Post({
+  author,
+  content,
+  publishedAt,
+  modalRef,
+  onShowModal,
+}: PostProps) {
   const [comments, setComments] = useState(["Post muito bacana, hein?"]);
 
   const [newCommentText, setNewCommentText] = useState("");
+
+  const commentToDeleteRef = useRef({ value: "" });
 
   const publishedAtDateFormatted = format(
     publishedAt,
@@ -60,14 +77,24 @@ export function Post({ author, content, publishedAt }: PostProps) {
     target.setCustomValidity("Esse campo é obrigatório!");
   }
 
-  function deleteComment(commentToDelete: string) {
-    const commentsWithoutDeletedOne = comments.filter(
-      (comment) => comment !== commentToDelete
-    );
-    setComments(commentsWithoutDeletedOne);
+  function conformToDeleteComment(commentToDelete: string) {
+    commentToDeleteRef.current.value = commentToDelete;
+    onShowModal();
+  }
+
+  function deleteComment() {
+    console.log(modalRef.current?.returnValue);
+
+    // const commentsWithoutDeletedOne = comments.filter(
+    //   (comment) => comment !== commentToDeleteRef.current.value
+    // );
+    // setComments(commentsWithoutDeletedOne);
+    // commentToDeleteRef.current.value = "";
   }
 
   const isNewCommentEmpty = newCommentText.length === 0;
+
+  // modalRef.current?.onclose?.(() => deleteComment());
 
   return (
     <article className={styles.post}>
@@ -113,11 +140,9 @@ export function Post({ author, content, publishedAt }: PostProps) {
           required
         ></textarea>
         <footer>
-          <Button.Root type="primary">
-            <Button.Button type="submit" disabled={isNewCommentEmpty}>
-              Publicar
-            </Button.Button>
-          </Button.Root>
+          <Button color="primary" type="submit" disabled={isNewCommentEmpty}>
+            Publicar
+          </Button>
         </footer>
       </form>
 
@@ -126,7 +151,7 @@ export function Post({ author, content, publishedAt }: PostProps) {
           <Comment
             key={comment}
             content={comment}
-            onDeleteComment={deleteComment}
+            onDeleteComment={conformToDeleteComment}
           />
         ))}
       </div>

@@ -45,19 +45,15 @@
   color: var(--grap-400);
 }
 
-.commentContent header button {
-  background: transparent;
-  cursor: pointer;
-  border: 0;
-  color: var(--grap-400);
-  cursor: pointer;
-  line-height: 0;
+.commentContent header .delete {
+  padding: 0;
   border-radius: 2px;
-
+  color: var(--grap-400);
+  line-height: 0;
   transition: color 0.1s;
 }
 
-.commentContent header button:hover {
+.commentContent header .delete:hover {
   color: var(--red-500);
 }
 
@@ -70,30 +66,26 @@
   margin-top: 1rem;
 }
 
-.commentBox footer button {
-  background: transparent;
-  cursor: pointer;
-  border: 0;
-  color: var(--grap-400);
-
-  display: flex;
-  align-items: center;
+.commentBox footer .like {
+  padding: 0;
   border-radius: 2px;
+  color: var(--grap-400);
+  gap: 0;
 }
 
-.commentBox footer button:hover {
+.commentBox footer .like:hover {
   color: var(--white);
 }
 
-.commentBox footer button:active {
+.commentBox footer .like:active {
   color: var(--green-300);
 }
 
-.commentBox footer button svg {
+.commentBox footer .like svg {
   margin-right: 0.5rem;
 }
 
-.commentBox footer button span::before {
+.commentBox footer .like span::before {
   content: "\2022";
   padding: 0 0.25rem;
 }

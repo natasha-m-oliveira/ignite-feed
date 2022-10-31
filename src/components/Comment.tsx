@@ -1,6 +1,7 @@
 import { ThumbsUp, Trash } from "phosphor-react";
 import { useState } from "react";
 import { Avatar } from "./Avatar";
+import { Button } from "./Button";
 import styles from "./Comment.module.css";
 
 interface CommentProps {
@@ -35,18 +36,29 @@ export function Comment({ content, onDeleteComment }: CommentProps) {
               </time>
             </div>
 
-            <button onClick={handleDeleteComment} title="Deletar comentário">
+            <Button
+              onClick={handleDeleteComment}
+              title="Deletar comentário"
+              color="danger"
+              text
+              className={styles.delete}
+            >
               <Trash size={24} />
-            </button>
+            </Button>
           </header>
           <p>{content}</p>
         </div>
 
         <footer>
-          <button onClick={handleLikeComment}>
+          <Button
+            onClick={handleLikeComment}
+            title="Aplaudir comentário"
+            text
+            className={styles.like}
+          >
             <ThumbsUp />
             Aplaudir <span>{likeCount}</span>
-          </button>
+          </Button>
         </footer>
       </div>
     </div>
