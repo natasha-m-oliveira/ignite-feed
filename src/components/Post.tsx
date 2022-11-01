@@ -1,17 +1,11 @@
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import {
-  ChangeEvent,
-  FormEvent,
-  InvalidEvent,
-  RefObject,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, InvalidEvent, useRef, useState } from "react";
 
 import { Avatar } from "./Avatar";
 import { Button } from "./Button";
 import { Comment } from "./Comment";
+import { Modal } from "./Modal";
 import styles from "./Post.module.css";
 
 interface Author {
@@ -29,22 +23,13 @@ interface PostProps {
   author: Author;
   content: Content[];
   publishedAt: Date;
-  modalRef: RefObject<HTMLDialogElement>;
-  onShowModal: () => void;
 }
 
-export function Post({
-  author,
-  content,
-  publishedAt,
-  modalRef,
-  onShowModal,
-}: PostProps) {
+export function Post({ author, content, publishedAt }: PostProps) {
+  const modalRef = useRef<HTMLDialogElement>(null);
   const [comments, setComments] = useState(["Post muito bacana, hein?"]);
-
+  const [commentToDelete, setCommentToDelete] = useState("");
   const [newCommentText, setNewCommentText] = useState("");
-
-  const commentToDeleteRef = useRef({ value: "" });
 
   const publishedAtDateFormatted = format(
     publishedAt,
@@ -77,24 +62,24 @@ export function Post({
     target.setCustomValidity("Esse campo é obrigatório!");
   }
 
-  function conformToDeleteComment(commentToDelete: string) {
-    commentToDeleteRef.current.value = commentToDelete;
-    onShowModal();
+  function handleDeleteComment() {
+    const commentsWithoutDeletedOne = comments.filter(
+      (comment) => comment !== commentToDelete
+    );
+    setComments(commentsWithoutDeletedOne);
+    modalRef.current?.close();
   }
 
-  function deleteComment() {
-    console.log(modalRef.current?.returnValue);
+  function handleHideModal() {
+    modalRef.current?.close();
+  }
 
-    // const commentsWithoutDeletedOne = comments.filter(
-    //   (comment) => comment !== commentToDeleteRef.current.value
-    // );
-    // setComments(commentsWithoutDeletedOne);
-    // commentToDeleteRef.current.value = "";
+  function conformToDeleteComment(commentToDelete: string) {
+    setCommentToDelete(commentToDelete);
+    modalRef.current?.showModal();
   }
 
   const isNewCommentEmpty = newCommentText.length === 0;
-
-  // modalRef.current?.onclose?.(() => deleteComment());
 
   return (
     <article className={styles.post}>
@@ -155,6 +140,22 @@ export function Post({
           />
         ))}
       </div>
+
+      <Modal.Root ref={modalRef}>
+        <Modal.Header>Excluir comentário</Modal.Header>
+        <Modal.Body>
+          <p>Você tem certeza que gostaria de</p>
+          <p>excluir este comentário?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button text onClick={handleHideModal}>
+            Cancelar
+          </Button>
+          <Button color="danger" onClick={handleDeleteComment}>
+            Sim, excluir
+          </Button>
+        </Modal.Footer>
+      </Modal.Root>
     </article>
   );
 }
