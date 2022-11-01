@@ -100,7 +100,7 @@
   max-height: none;
 }
 
-.commentForm footer > div {
+.commentForm footer > button {
   margin-top: 1rem;
   width: min-content;
 }

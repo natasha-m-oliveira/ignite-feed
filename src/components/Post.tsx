@@ -1,10 +1,11 @@
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { ChangeEvent, FormEvent, InvalidEvent, useState } from "react";
+import { ChangeEvent, FormEvent, InvalidEvent, useRef, useState } from "react";
 
 import { Avatar } from "./Avatar";
 import { Button } from "./Button";
 import { Comment } from "./Comment";
+import { Modal } from "./Modal";
 import styles from "./Post.module.css";
 
 interface Author {
@@ -25,8 +26,9 @@ interface PostProps {
 }
 
 export function Post({ author, content, publishedAt }: PostProps) {
+  const modalRef = useRef<HTMLDialogElement>(null);
   const [comments, setComments] = useState(["Post muito bacana, hein?"]);
-
+  const [commentToDelete, setCommentToDelete] = useState("");
   const [newCommentText, setNewCommentText] = useState("");
 
   const publishedAtDateFormatted = format(
@@ -60,11 +62,21 @@ export function Post({ author, content, publishedAt }: PostProps) {
     target.setCustomValidity("Esse campo é obrigatório!");
   }
 
-  function deleteComment(commentToDelete: string) {
+  function handleDeleteComment() {
     const commentsWithoutDeletedOne = comments.filter(
       (comment) => comment !== commentToDelete
     );
     setComments(commentsWithoutDeletedOne);
+    modalRef.current?.close();
+  }
+
+  function handleHideModal() {
+    modalRef.current?.close();
+  }
+
+  function conformToDeleteComment(commentToDelete: string) {
+    setCommentToDelete(commentToDelete);
+    modalRef.current?.showModal();
   }
 
   const isNewCommentEmpty = newCommentText.length === 0;
@@ -113,11 +125,9 @@ export function Post({ author, content, publishedAt }: PostProps) {
           required
         ></textarea>
         <footer>
-          <Button.Root type="primary">
-            <Button.Button type="submit" disabled={isNewCommentEmpty}>
-              Publicar
-            </Button.Button>
-          </Button.Root>
+          <Button color="primary" type="submit" disabled={isNewCommentEmpty}>
+            Publicar
+          </Button>
         </footer>
       </form>
 
@@ -126,10 +136,26 @@ export function Post({ author, content, publishedAt }: PostProps) {
           <Comment
             key={comment}
             content={comment}
-            onDeleteComment={deleteComment}
+            onDeleteComment={conformToDeleteComment}
           />
         ))}
       </div>
+
+      <Modal.Root ref={modalRef}>
+        <Modal.Header>Excluir comentário</Modal.Header>
+        <Modal.Body>
+          <p>Você tem certeza que gostaria de</p>
+          <p>excluir este comentário?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button text onClick={handleHideModal}>
+            Cancelar
+          </Button>
+          <Button color="danger" onClick={handleDeleteComment}>
+            Sim, excluir
+          </Button>
+        </Modal.Footer>
+      </Modal.Root>
     </article>
   );
 }
